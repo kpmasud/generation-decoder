@@ -1,0 +1,142 @@
+
+-- Signature added -- 
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age & Generation Calculator</title>
+    
+    <!-- Tailwind CSS for Styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PyScript -->
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+
+    <style>
+        .loading { display: inline-block; }
+    </style>
+</head>
+
+
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div class="max-w-md w-full bg-slate-800 rounded-xl shadow-2xl overflow-hidden border border-slate-700">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-center">
+            <h1 class="text-2xl font-bold tracking-wider">Generation Decoder</h1>
+            <p class="text-emerald-100 text-sm mt-1">Check your Age & Gen Analysis</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="p-6 space-y-6">
+            
+            <!-- Input Section -->
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-2">
+                    Please Enter your Birth Date:
+                </label>
+                <input type="date" id="birthdate" 
+                       class="w-full p-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-emerald-500 outline-none transition">
+            </div>
+
+            <!-- Action Button -->
+            <button id="calculate-btn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg transform hover:-translate-y-0.5">
+                Analyze Profile
+            </button>
+
+            <!-- Results Display -->
+            <div id="result-container" class="bg-slate-900 p-6 rounded-lg border border-slate-600 text-center hidden">
+                
+                <!-- Age Section -->
+                <div class="mb-4 border-b border-slate-700 pb-4">
+                    <p class="text-slate-400 text-xs uppercase tracking-widest">Current Age</p>
+                    <div id="age-output" class="text-4xl font-bold text-white mt-1">--</div>
+                </div>
+
+                <!-- Generation Section -->
+                <div>
+                    <p class="text-slate-400 text-xs uppercase tracking-widest">Generation</p>
+                    <div id="gen-output" class="text-2xl font-bold text-emerald-400 mt-1">--</div>
+                    <p id="gen-desc" class="text-slate-500 text-sm mt-2 italic">--</p>
+                </div>
+            </div>
+            
+            <!-- Python Analysis Output -->
+            <div id="status" class="text-xs text-slate-500 text-center italic mt-2">
+                Loading Generation Decoder...
+            </div>
+        </div>
+    </div>
+
+    <!-- Python Code -->
+    <script type="py">
+        from datetime import date, datetime
+        from pyscript import document
+        from js import console
+
+        def get_generation(year):
+            if year >= 2013:
+                return "Gen Alpha", "The tech-integrated generation."
+            elif 1997 <= year <= 2012:
+                return "Gen Z", "Digital natives and social changemakers."
+            elif 1981 <= year <= 1996:
+                return "Millennials", "The bridge between analog and digital."
+            elif 1965 <= year <= 1980:
+                return "Generation X", "The independent, latchkey generation."
+            elif 1946 <= year <= 1964:
+                return "Baby Boomers", "Witnesses to massive cultural shifts."
+            elif 1928 <= year <= 1945:
+                return "Silent Generation", "Traditionalists born during hard times."
+            else:
+                return "Greatest Generation", "Resilient generation of the early 20th century."
+
+        def calculate_profile(event):
+            raw_date = document.querySelector("#birthdate").value
+            
+            if not raw_date:
+                document.querySelector("#status").innerText = "Please select a valid date."
+                return
+
+            try:
+                # Parse date
+                birth_date = datetime.strptime(raw_date, "%Y-%m-%d").date()
+                today = date.today()
+                
+                # Calculate Age
+                age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+                
+                # Determine Generation
+                gen_name, gen_desc = get_generation(birth_date.year)
+
+                # Update UI
+                result_container = document.querySelector("#result-container")
+                result_container.classList.remove("hidden")
+                
+                document.querySelector("#age-output").innerText = f"{age} Years Old"
+                document.querySelector("#gen-output").innerText = gen_name
+                document.querySelector("#gen-desc").innerText = gen_desc
+                document.querySelector("#status").innerText = "Calculation complete Thank You."
+
+            except Exception as e:
+                console.log(f"Error: {e}")
+                document.querySelector("#status").innerText = "Error calculating age."
+
+        # Bind event
+        document.querySelector("#calculate-btn").onclick = calculate_profile
+        
+        # Initial Ready State
+        document.querySelector("#status").innerText = "System Ready. Enter birthdate."
+    </script>
+    <div class="fixed bottom-2 right-3 text-[10px] text-slate-500 opacity-60">
+    Crafted by <span class="text-emerald-400 font-bold">KP</span>
+</div>
+
+</body>
+</html>
